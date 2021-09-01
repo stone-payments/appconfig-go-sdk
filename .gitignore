@@ -1,0 +1,5 @@
+vendor/
+.vscode/
+
+# File to test SDK behaviour, should not be versioned
+main.go 
