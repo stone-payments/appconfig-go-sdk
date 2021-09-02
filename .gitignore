@@ -1,5 +1,6 @@
 vendor/
 .vscode/
+cover.out
 
 # File to test SDK behaviour, should not be versioned
 main.go 
