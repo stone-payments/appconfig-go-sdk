@@ -5,4 +5,5 @@ go 1.16
 require (
 	github.com/Azure/go-autorest/autorest v0.11.20
 	github.com/Azure/go-autorest/autorest/azure/auth v0.5.8
+	github.com/google/go-cmp v0.5.6
 )
