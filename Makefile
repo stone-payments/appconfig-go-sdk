@@ -8,9 +8,12 @@ OK		= echo ${TIME} ${GREEN}[ OK ]${CNone}
 FAIL	= (echo ${TIME} ${RED}[FAIL]${CNone} && false)
 
 test:
-	go test -v ./... || $(FAIL)
+	go test -v -cover ./... || $(FAIL)
 	@$(OK) tests passed
 
 coverage:
 	go test -v -coverprofile=cover.out ./...
 	go tool cover -html=cover.out
+
+build:
+	go build -v ./...
