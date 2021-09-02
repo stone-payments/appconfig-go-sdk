@@ -20,9 +20,23 @@ const (
 // Client is an interface with all methods to
 // manage App Configuration Key Values
 type Client interface {
+	// ListKeyValues returns an array of App Configuration KeyValues. The list
+	// of KeyValues are filtered by the provided Key and/or Label.
+	//
+	// Optional: Key; Label (if not specified, it implies any Key/Label).
 	ListKeyValues(ListKeyValuesArgs) (KeyValues, error)
+
+	// GetKeyValue gets an App Configuration Key-Value.
 	GetKeyValue(key, label string) (KeyValue, error)
+
+	// CreateOrUpdateKeyValue create/update an App Configuration Key-Value.
+	//
+	// Required parameters: Key; Value
+	//
+	// Optional parameters: Label; ContentType; Tags; IsSecret
 	CreateOrUpdateKeyValue(CreateOrUpdateKeyValueArgs) (KeyValue, error)
+
+	// DeleteKeyValue deletes an App Configuration Key-Value.
 	DeleteKeyValue(key, label string) error
 }
 
