@@ -93,7 +93,12 @@ func (client *ClientImpl) ListKeyValues(args ListKeyValuesArgs) (KeyValues, erro
 		args.Label = "*"
 	}
 
-	response, err := client.sendRequest(args.Label, args.Key, true, autorest.AsGet())
+	req, err := client.createListRequest(args.Label, args.Key, autorest.AsGet())
+	if err != nil {
+		return KeyValues{}, err
+	}
+
+	response, err := client.sendRequest(req)
 	if err != nil {
 		return KeyValues{}, err
 	}
@@ -108,7 +113,17 @@ func (client *ClientImpl) ListKeyValues(args ListKeyValuesArgs) (KeyValues, erro
 // GetKeyValue gets an App Configuration Key-Value.
 func (client *ClientImpl) GetKeyValue(key, label string) (KeyValue, error) {
 	result := KeyValue{}
-	response, err := client.sendRequest(label, url.QueryEscape(key), false, autorest.AsGet())
+
+	req, err := client.createRequest(
+		label,
+		url.QueryEscape(key),
+		autorest.AsGet(),
+	)
+	if err != nil {
+		return result, err
+	}
+
+	response, err := client.sendRequest(req)
 	if err != nil {
 		return result, err
 	}
@@ -134,14 +149,18 @@ func (client *ClientImpl) CreateOrUpdateKeyValue(args CreateOrUpdateKeyValueArgs
 		}
 	}
 
-	response, err := client.sendRequest(
+	req, err := client.createRequest(
 		args.Label,
 		args.Key,
-		false,
 		autorest.AsContentType(defaultContentType),
 		autorest.AsPut(),
 		autorest.WithJSON(args),
 	)
+	if err != nil {
+		return result, err
+	}
+
+	response, err := client.sendRequest(req)
 	if err != nil {
 		return result, err
 	}
@@ -155,47 +174,52 @@ func (client *ClientImpl) CreateOrUpdateKeyValue(args CreateOrUpdateKeyValueArgs
 
 // DeleteKeyValue deletes an App Configuration Key-Value.
 func (client *ClientImpl) DeleteKeyValue(key, label string) error {
-	_, err := client.sendRequest(
-		label,
-		url.QueryEscape(key),
-		false,
-		autorest.AsDelete(),
-	)
+	req, err := client.createRequest(label, url.QueryEscape(key), autorest.AsDelete())
 	if err != nil {
 		return err
 	}
-	return nil
+	_, err = client.sendRequest(req)
+	return err
 }
 
-func (client *ClientImpl) sendRequest(label string, key string, isList bool, additionalDecorator ...autorest.PrepareDecorator) (*http.Response, error) {
-	var req *http.Request
-	var err error
+func (client *ClientImpl) createRequest(label, key string, additionalDecorator ...autorest.PrepareDecorator) (*http.Request, error) {
 	queryParameters := map[string]interface{}{
 		"label":       label,
 		"api-version": apiVersion,
 	}
 
-	if !isList {
-		req, err = client.preparer(
-			label,
-			key,
-			queryParameters,
-			additionalDecorator...,
-		).Prepare(&http.Request{})
-	} else {
-		req, err = client.listPreparer(
-			label,
-			key,
-			queryParameters,
-			additionalDecorator...,
-		).Prepare(&http.Request{})
-	}
+	req, err := client.preparer(
+		label,
+		key,
+		queryParameters,
+		additionalDecorator...,
+	).Prepare(&http.Request{})
 	if err != nil {
 		return nil, err
 	}
+	return req, nil
+}
 
-	var resp *http.Response
-	resp, err = client.Send(req)
+func (client *ClientImpl) createListRequest(label, key string, additionalDecorator ...autorest.PrepareDecorator) (*http.Request, error) {
+	queryParameters := map[string]interface{}{
+		"label":       label,
+		"api-version": apiVersion,
+	}
+
+	req, err := client.listPreparer(
+		label,
+		key,
+		queryParameters,
+		additionalDecorator...,
+	).Prepare(&http.Request{})
+	if err != nil {
+		return nil, err
+	}
+	return req, nil
+}
+
+func (client *ClientImpl) sendRequest(req *http.Request) (*http.Response, error) {
+	resp, err := client.Send(req)
 	if err != nil {
 		return nil, err
 	}
@@ -204,7 +228,6 @@ func (client *ClientImpl) sendRequest(label string, key string, isList bool, add
 		body := string(s)
 		return resp, fmt.Errorf("ERROR: %s - Response Body: %s", resp.Status, body)
 	}
-
 	return resp, err
 }
 
