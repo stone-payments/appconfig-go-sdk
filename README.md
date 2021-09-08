@@ -17,7 +17,7 @@ import "github.com/stone-payments/appconfig-go-sdk"
 
 ## Usage
 ```golang
-import "github.com/stone-payments/appconfig-go-sdk"
+import "github.com/stone-payments/appconfig-go-sdk/appconfig/keyvalues"
 ```
 
 Construct a new client for the desired resource. In this example, we will use the KeyValue Client.
