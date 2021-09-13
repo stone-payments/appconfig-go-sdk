@@ -71,7 +71,7 @@ func NewClientCli(endpoint string) (Client, error) {
 	return NewClient(endpoint, auth), nil
 }
 
-// NewClient creates an instance of the Client client.
+// NewClient creates an instance of the Client.
 func NewClient(endpoint string, authorizer autorest.Authorizer) Client {
 	client := autorest.NewClientWithUserAgent(autorest.UserAgent())
 	client.Authorizer = authorizer
