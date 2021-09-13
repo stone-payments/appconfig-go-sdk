@@ -59,7 +59,7 @@ func NewClientAzureAD(args NewClientAzureADArgs) (Client, error) {
 		return nil, err
 	}
 
-	return newClient(args.ResourceEndpoint, auth), nil
+	return NewClient(args.ResourceEndpoint, auth), nil
 }
 
 // NewClientCli creates a Client configured from Azure CLI 2.0.
@@ -68,10 +68,10 @@ func NewClientCli(endpoint string) (Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	return newClient(endpoint, auth), nil
+	return NewClient(endpoint, auth), nil
 }
 
-func newClient(endpoint string, authorizer autorest.Authorizer) Client {
+func NewClient(endpoint string, authorizer autorest.Authorizer) Client {
 	client := autorest.NewClientWithUserAgent(autorest.UserAgent())
 	client.Authorizer = authorizer
 
