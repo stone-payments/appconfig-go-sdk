@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+    name: appconfig-go-sdk
+    title: App Config Go SDK
+    description: Go SDKs for interacting with and managing Azure App Configuration Key Values.
+    namespace: stone
+    tags:
+      - golang
+    annotations:
+      legacy.stone.tech/owner-email: foundation.platform@stone.com.br
+spec:
+    type: library
+    lifecycle: production
+    owner: stone-payments/foundation-platform
